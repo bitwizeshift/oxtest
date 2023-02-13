@@ -1,0 +1,22 @@
+[package]
+name = "neotest_macros"
+version = "0.0.1"
+edition = "2021"
+
+keywords = ["test", "fixture", "proc-macros"]
+license = "MIT OR Apache-2.0"
+
+[lib]
+name = "neotest_macros"
+proc-macro = true
+
+[features]
+default = []
+
+[dependencies]
+syn = { version = "1.0", features = ["full"] }
+quote = "1.0"
+proc-macro2 = "1.0"
+neotest_common = { path = "../neotest-common" }
+
+[dev-dependencies]

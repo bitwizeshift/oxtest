@@ -1,0 +1,20 @@
+[package]
+name = "neotest"
+version = "0.0.1"
+edition = "2021"
+
+keywords = ["test", "fixture"]
+license = "MIT OR Apache-2.0"
+
+[lib]
+test = true
+examples = true
+
+[features]
+default = []
+
+[dependencies]
+neotest_macros = { path = "../neotest-macros" }
+neotest_common = { path = "../neotest-common" }
+
+[dev-dependencies]

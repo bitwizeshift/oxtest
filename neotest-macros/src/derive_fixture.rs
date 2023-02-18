@@ -6,7 +6,11 @@ pub(crate) fn derive(input: TokenStream) -> TokenStream {
   let DeriveInput { ident, .. } = parse_macro_input!(input);
 
   let output = quote! {
-    impl ::neotest::Fixture for #ident {}
+    impl ::neotest::Fixture for #ident {
+      fn prepare() -> ::neotest::Result<Self> {
+        Ok(Default::default())
+      }
+    }
   };
   output.into()
 }

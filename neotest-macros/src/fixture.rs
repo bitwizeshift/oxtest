@@ -29,24 +29,18 @@ pub(crate) fn fixture(attribute: TokenStream, item: TokenStream) -> TokenStream 
 
   let output = quote! {
     #[doc(hidden)]
-    mod #test_fn_ident {
-      use super::*;
-
-      // Not used... yet
-    }
-
-    #[doc(hidden)]
-    fn #fixture_fn_ident(#fixture_arg_value_ident: #fixture_arg_type_ident) {
+    #[allow(dead_code)]
+    fn #fixture_fn_ident(
+      #fixture_arg_value_ident: #fixture_arg_type_ident
+    ) {
       #test_fn_block
     }
 
     #[test]
     fn #test_fn_ident() {
-      let mut fixture = #fixture_ident::default();
+      let fixture = #fixture_ident::prepare();
 
-      fixture.set_up();
       #fixture_fn_ident(&mut fixture);
-      fixture.tear_down();
     }
   };
 

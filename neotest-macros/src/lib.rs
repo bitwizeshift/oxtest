@@ -296,7 +296,9 @@ pub fn neotest(attribute: TokenStream, item: TokenStream) -> TokenStream {
 /// # Note
 ///
 /// This macro only exists to give proper intellisense. Real sections will be
-/// substituted by the [`neotest!`] macro.
+/// substituted by the [`neotest`] attribute.
+///
+/// [`neotest`]: macro@crate::neotest
 #[proc_macro_attribute]
 pub fn section(attribute: TokenStream, item: TokenStream) -> TokenStream {
   if !attribute.is_empty() {

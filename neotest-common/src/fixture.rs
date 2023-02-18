@@ -38,7 +38,7 @@ use crate::Result;
 /// }
 /// ```
 ///
-/// [`derive(Fixture)`]: crate::fixture
+/// [`derive(Fixture)`]: crate::Fixture
 pub trait Fixture
 where
   Self: Sized,

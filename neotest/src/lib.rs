@@ -5,8 +5,7 @@
 //!
 //! # Features
 //!
-//! * Test-fixtures with customized [`Fixture::set_up`] and [`Fixture::tear_down`]
-//!   functionality.
+//! * Test-fixtures with customized prepartion via [`Fixture::prepare`].
 //! * Parameterized test-cases created with combinatorial inputs, which creates
 //!   an easy mechanisms to set up multiple inputs
 //! * Parameterized generic test-cases from either types or const inputs

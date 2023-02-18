@@ -1,17 +1,29 @@
-use neotest::{test_fixture, Fixture};
+#[cfg(test)]
+mod test {
+  use neotest::{neotest, Fixture};
+  #[derive(Default, Fixture)]
+  struct SomeFixture {}
 
-#[derive(Default, Fixture)]
-struct SomeFixture {}
+  impl SomeFixture {
+    fn do_something(&self) {
+      println!("Doing something");
+    }
 
-impl SomeFixture {
-  fn do_some_setup(&self) {}
-}
+    fn do_something_truthy(&self) -> bool {
+      true
+    }
+  }
 
-#[test_fixture(SomeFixture)]
-fn test_something(f: &SomeFixture) {
-  f.do_some_setup();
+  // Test without a fixture
+  #[neotest]
+  fn test_normal() {}
 
-  assert!(true);
+  // Test with a fixture
+  #[neotest(fixture = SomeFixture)]
+  fn test_fixture(f: SomeFixture) {
+    f.do_something();
+    assert!(f.do_something_truthy());
+  }
 }
 
 fn main() {}

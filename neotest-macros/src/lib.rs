@@ -5,6 +5,7 @@ use syn::parse_macro_input;
 mod derive_fixture;
 mod input;
 mod model;
+mod syn_utils;
 
 /// A derive-macro for automatically implementing the [`Fixture`] trait.
 ///

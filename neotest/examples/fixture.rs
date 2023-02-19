@@ -14,10 +14,6 @@ mod test {
     }
   }
 
-  // Test without a fixture
-  #[neotest]
-  fn test_normal() {}
-
   // Test with a fixture
   #[neotest(fixture = SomeFixture)]
   fn test_fixture(f: SomeFixture) {

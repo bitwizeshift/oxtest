@@ -20,6 +20,7 @@ use syn::Token;
 /// ```
 ///
 /// [`neotest`]: crate::neotest
+#[derive(Clone)]
 pub(crate) struct ParameterInput {
   pub ident: syn::Ident,
   pub inputs: syn::ExprArray,
@@ -46,6 +47,7 @@ impl syn::parse::Parse for ParameterInput {
 
 /// A sequence of types, each with potential attribute specifications.
 #[allow(dead_code)]
+#[derive(Clone)]
 pub(crate) struct TypeSequence {
   pub bracket_token: syn::token::Bracket,
   pub elems: syn::punctuated::Punctuated<syn::Type, Token![,]>,
@@ -96,6 +98,7 @@ impl syn::parse::Parse for TypeSequence {
 ///
 /// [`neotest`]: crate::neotest
 #[allow(dead_code)]
+#[derive(Clone)]
 pub(crate) struct TypeParameterInput {
   pub ident: syn::Ident,
   pub inputs: TypeSequence,
@@ -139,6 +142,7 @@ impl syn::parse::Parse for TypeParameterInput {
 ///
 /// [`neotest`]: crate::neotest
 #[allow(dead_code)]
+#[derive(Clone)]
 pub(crate) struct ConstParameterInput {
   pub ident: syn::Ident,
   pub inputs: syn::ExprArray,
@@ -183,6 +187,7 @@ impl syn::parse::Parse for ConstParameterInput {
 /// ```
 ///
 /// [`neotest`]: crate::neotest
+#[derive(Clone)]
 pub(crate) struct FixtureInput {
   pub ident: syn::Ident,
 }
@@ -203,6 +208,7 @@ impl syn::parse::Parse for FixtureInput {
   }
 }
 
+#[derive(Clone)]
 pub(crate) struct TestInputs {
   pub fixture: Option<FixtureInput>,
   pub parameters: Vec<ParameterInput>,

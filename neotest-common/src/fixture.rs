@@ -8,21 +8,11 @@ use crate::Result;
 ///
 /// # Examples
 ///
-/// Derive macro:
+/// Basic use:
 ///
 /// ```rust
-/// # use neotest::Fixture;
-/// #[derive(Default, Fixture)]
-/// struct TestFixture {
-///     some_state: u32,
-/// }
-/// ```
-///
-/// Manual Implementation:
-///
-/// ```rust
-/// # use neotest::Fixture;
-/// # use neotest::Result;
+/// # use neotest_common::Fixture;
+/// # use neotest_common::Result;
 /// struct TestFixture {
 ///     some_state: u32,
 /// }

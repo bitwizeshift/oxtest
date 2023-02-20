@@ -18,8 +18,8 @@ pub(crate) mod syn_utils;
 ///
 /// Basic use:
 ///
-/// ```
-/// # use crate::Fixture
+/// ```ignore
+/// use neotest::Fixture;
 /// #[derive(Default, Fixture)]
 /// struct MyFixture {
 ///     // ...
@@ -38,7 +38,7 @@ pub fn fixture(input: TokenStream) -> TokenStream {
 /// than through argument injection. For example, take this typical
 /// injected fixture:
 ///
-/// ```
+/// ```ignore
 /// # use neotest::Fixture;
 /// #[derive(Default, Fixture)]
 /// struct TestFixture {};
@@ -54,7 +54,7 @@ pub fn fixture(input: TokenStream) -> TokenStream {
 ///
 /// This can be rewritten as:
 ///
-/// ```
+/// ```ignore
 /// # use neotest::neotest_fixture;
 /// # use neotest::Fixture;
 /// #[derive(Default, Fixture)]
@@ -139,7 +139,7 @@ macro_rules! syn_try {
 ///
 /// To execute tests with the same sets of inputs, use tuples instead:
 ///
-/// ```
+/// ```ignore
 /// #[neotest(parameter = a as [(1, 1), (2, 2), /* etc */])]
 /// fn test_something(a: (u32, u32)){ /* ... */ }
 /// ```
@@ -148,7 +148,7 @@ macro_rules! syn_try {
 ///
 /// Basic use:
 ///
-/// ```
+/// ```ignore
 /// use neotest::neotest;
 ///
 /// // Equivalent to just #[test]
@@ -160,7 +160,7 @@ macro_rules! syn_try {
 ///
 /// Using fixtures:
 ///
-/// ```
+/// ```ignore
 /// use neotest::neotest;
 /// use neotest::Fixture;
 ///
@@ -180,7 +180,7 @@ macro_rules! syn_try {
 ///
 /// Test parameter inputs:
 ///
-/// ```
+/// ```ignore
 /// use neotest::neotest;
 ///
 /// // Calls test_something_with_parameter with 0xdead and 0xbeef
@@ -192,7 +192,7 @@ macro_rules! syn_try {
 ///
 /// Test generic type-parameter inputs:
 ///
-/// ```
+/// ```ignore
 /// use neotest::neotest;
 ///
 /// // Calls test_something_with_generic_type_parameter with T as u32 and u64
@@ -204,7 +204,7 @@ macro_rules! syn_try {
 ///
 /// Test generic const-parameter inputs:
 ///
-/// ```
+/// ```ignore
 /// use neotest::neotest;
 ///
 /// // Calls test_something_with_generic_const_parameter with VALUE as 0xdead
@@ -217,7 +217,7 @@ macro_rules! syn_try {
 ///
 /// Combined with everything:
 ///
-/// ```
+/// ```ignore
 /// use neotest::neotest;
 /// use neotest::Fixture;
 ///
@@ -276,7 +276,7 @@ pub fn neotest(attribute: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// # Examples
 ///
-/// ```
+/// ```ignore
 /// # use crate::neotest
 /// # use crate::section
 /// #[neotest]

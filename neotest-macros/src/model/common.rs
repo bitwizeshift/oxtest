@@ -1,31 +1,31 @@
 /// A module containing helper attributes regularly used in the internal-functions
 /// within neotest.
-pub(crate) mod attribute {
+pub mod attribute {
   use syn::parse_quote;
   use syn::Attribute;
 
   /// A helper function for creating the attribute `#[doc(hidden)]`
-  pub(crate) fn doc_hidden() -> Attribute {
+  pub fn doc_hidden() -> Attribute {
     parse_quote!(#[doc(hidden)])
   }
 
   /// A helper function for creating the attribute `#[allow(dead_code)]`
-  pub(crate) fn allow_dead_code() -> Attribute {
+  pub fn allow_dead_code() -> Attribute {
     parse_quote!(#[allow(dead_code)])
   }
 
   /// A helper function for creating the attribute `#[test]`
-  pub(crate) fn test() -> Attribute {
+  pub fn test() -> Attribute {
     parse_quote!(#[test])
   }
 }
 
 /// A module containing helper function argument definitions used in the
 /// internal-functions within neotest.
-pub(crate) mod fn_arg {
+pub mod fn_arg {
   use syn::parse_quote;
   use syn::FnArg;
-  pub(crate) fn context() -> FnArg {
+  pub fn context() -> FnArg {
     let context = super::ty::context();
     let context_ident = super::ident::context();
 
@@ -33,20 +33,20 @@ pub(crate) mod fn_arg {
   }
 }
 
-pub(crate) mod path {
+pub mod path {
   use syn::parse_quote;
   use syn::Path;
 
-  pub(crate) fn crate_internal() -> Path {
+  pub fn crate_internal() -> Path {
     parse_quote! { ::neotest::__internal }
   }
 }
 
-pub(crate) mod ty {
+pub mod ty {
   use syn::parse_quote;
   use syn::Type;
 
-  pub(crate) fn context() -> Type {
+  pub fn context() -> Type {
     let path = super::path::crate_internal();
 
     parse_quote!( #path::__Context )
@@ -55,13 +55,13 @@ pub(crate) mod ty {
 
 /// A module containing common ident generation functons used within neotest
 /// internals.
-pub(crate) mod ident {
+pub mod ident {
 
   use proc_macro2::Span;
   use syn::parse_quote;
   use syn::Ident;
 
-  pub(crate) fn context() -> Ident {
+  pub fn context() -> Ident {
     parse_quote!(__context)
   }
 
@@ -70,7 +70,7 @@ pub(crate) mod ident {
   /// # Arguments
   ///
   /// * `base` - the base name of the test (what is specified by the user)
-  pub(crate) fn new_test_impl(base: &Ident) -> Ident {
+  pub fn new_test_impl(base: &Ident) -> Ident {
     let name_str = base.to_string();
     let new_ident_str = format!("__neotest_{name_str}_impl");
 
@@ -82,7 +82,7 @@ pub(crate) mod ident {
   /// # Arguments
   ///
   /// * `base` - the base name of the test (what is specified by the user)
-  pub(crate) fn new_test_dispatch(base: &Ident) -> Ident {
+  pub fn new_test_dispatch(base: &Ident) -> Ident {
     let name_str = base.to_string();
     let new_ident_str = format!("__neotest_{name_str}_dispatcher");
 
@@ -98,7 +98,7 @@ pub(crate) mod ident {
   ///
   /// * `indices` - the indices that represent the input values
   /// * `span` - the span for where this input comes from
-  pub(crate) fn new_test_input(indices: &[usize], span: Span) -> Ident {
+  pub fn new_test_input(indices: &[usize], span: Span) -> Ident {
     use std::fmt::Write;
     assert!(!indices.is_empty());
 

@@ -2,10 +2,10 @@ use proc_macro::TokenStream;
 use quote::ToTokens;
 use syn::parse_macro_input;
 
-mod derive_fixture;
-mod input;
-mod model;
-mod syn_utils;
+pub(crate) mod derive_fixture;
+pub(crate) mod input;
+pub(crate) mod model;
+pub(crate) mod syn_utils;
 
 /// A derive-macro for automatically implementing the [`Fixture`] trait.
 ///

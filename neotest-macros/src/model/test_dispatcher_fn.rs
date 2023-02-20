@@ -8,7 +8,7 @@ use crate::{
 
 /// This models the fixture dispatch function that will be used to forward
 /// a fully-constructed fixture.
-pub(crate) struct TestDispatcherFn {
+pub struct TestDispatcherFn {
   pub attrs: Vec<Attribute>,
   pub sig: Signature,
   pub block: Box<Block>,

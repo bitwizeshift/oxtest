@@ -10,7 +10,7 @@ use super::{ident, ty, ParameterizedTests};
 ///
 /// This will be the cleanly-named function marked up with the [`test`] attribute.
 /// For parameter-based inputs, this will dispatch all sub-tests.
-pub(crate) struct TestMainFn {
+pub struct TestMainFn {
   attrs: Vec<Attribute>,
   sig: Signature,
   block: Box<Block>,

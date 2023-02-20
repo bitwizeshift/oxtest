@@ -10,7 +10,7 @@ use crate::model::{attribute, fn_arg, ident};
 /// except that the test name has been modified to be an internal identifier,
 /// and the block of expressions has been updated to be context-aware -- which
 /// is necessary for modeling subsections of tests.
-pub(crate) struct TestImplFn {
+pub struct TestImplFn {
   attrs: Vec<Attribute>,
   sig: Signature,
   block: Box<Block>,

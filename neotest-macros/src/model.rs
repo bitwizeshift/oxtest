@@ -13,13 +13,13 @@ mod test_dispatcher_fn;
 mod test_impl_fn;
 mod test_main_fn;
 
-pub(crate) use common::*;
-pub(crate) use parameterized_test::*;
-pub(crate) use test_dispatcher_fn::*;
-pub(crate) use test_impl_fn::*;
-pub(crate) use test_main_fn::*;
+pub use common::*;
+pub use parameterized_test::*;
+pub use test_dispatcher_fn::*;
+pub use test_impl_fn::*;
+pub use test_main_fn::*;
 
-pub(crate) struct TestModel {
+pub struct TestModel {
   test_main_fn: TestMainFn,
   test_fixture_fn: TestDispatcherFn,
   test_impl_fn: TestImplFn,

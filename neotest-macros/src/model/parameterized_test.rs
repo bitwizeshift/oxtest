@@ -118,7 +118,7 @@ impl ParameterizedTestInputs {
 ///
 /// One instance of [`ParameterizedTestFn`] will correspond to a given parameter
 /// set.
-pub(crate) struct ParameterizedTestFn {
+pub struct ParameterizedTestFn {
   pub attrs: Vec<Attribute>,
   pub sig: Signature,
   pub block: Box<Block>,
@@ -177,7 +177,7 @@ impl ToTokens for ParameterizedTestFn {
 
 /// A small utility for representing an expansion of a qualified call to
 /// parameterized-test functions.
-pub(crate) struct ParameterizedTestCall {
+pub struct ParameterizedTestCall {
   qualified_test: syn::Path,
 }
 
@@ -194,7 +194,7 @@ impl ToTokens for ParameterizedTestCall {
 
 /// An aggregate type that collects all parameterized test-cases into a
 /// base-module-aware type.
-pub(crate) struct ParameterizedTests {
+pub struct ParameterizedTests {
   /// The name of the main test being executed
   test_ident: syn::Ident,
 

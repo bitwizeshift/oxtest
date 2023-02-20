@@ -1,7 +1,10 @@
 use quote::{ToTokens, TokenStreamExt};
 use syn::{parse_quote, punctuated::Punctuated, Attribute, Block, FnArg, Signature};
 
-use crate::model::{attribute, fn_arg, ident, TestImplFn};
+use crate::{
+  model::{attribute, fn_arg, ident, TestImplFn},
+  syn_utils::TryIdent,
+};
 
 /// This models the fixture dispatch function that will be used to forward
 /// a fully-constructed fixture.
@@ -41,7 +44,9 @@ impl TestDispatcherFn {
 
     // Context is the last argument passed to tests
     let mut inputs = inputs;
-    inputs.push(parse_quote!(__context));
+    for v in sig.inputs.iter().map(TryIdent::try_ident).flatten() {
+      inputs.push(parse_quote!(#v));
+    }
 
     let mut attrs = attrs;
     attrs.push(attribute::doc_hidden());

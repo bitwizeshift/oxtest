@@ -2,8 +2,9 @@ use quote::{ToTokens, TokenStreamExt};
 use syn::{parse_quote, Attribute, Block, Signature};
 
 use crate::model::{attribute, TestDispatcherFn};
+use crate::syn_utils::Inner;
 
-use super::{ident, ty};
+use super::{ident, ty, ParameterizedTests};
 
 /// This models the function that will actually perform the rust-test.
 ///
@@ -16,7 +17,12 @@ pub(crate) struct TestMainFn {
 }
 
 impl TestMainFn {
-  pub fn new(attrs: Vec<Attribute>, sig: Signature, fixture_fn: &TestDispatcherFn) -> Self {
+  pub fn new(
+    attrs: Vec<Attribute>,
+    sig: Signature,
+    param_tests: Option<&ParameterizedTests>,
+    fixture_fn: &TestDispatcherFn,
+  ) -> Self {
     let mut attrs = attrs;
     attrs.push(attribute::test());
 
@@ -28,11 +34,22 @@ impl TestMainFn {
 
     let context = ty::context();
     let context_ident = ident::context();
-    let block: Box<Block> = parse_quote! {
-      {
-        let #context_ident = #context::all_tests();
+    let block: Box<Block> = if let Some(tests) = param_tests {
+      let calls = tests.as_calls();
+      let calls_inner = Inner(&calls);
 
-        #dispatch_ident(#context_ident);
+      parse_quote! {
+        {
+          #calls_inner
+        }
+      }
+    } else {
+      parse_quote! {
+        {
+          let #context_ident = #context::all_tests();
+
+          #dispatch_ident(#context_ident);
+        }
       }
     };
 

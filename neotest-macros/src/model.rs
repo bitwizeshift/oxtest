@@ -3,101 +3,54 @@
 
 use crate::input::FixtureInput;
 use crate::input::TestInputs;
+use crate::syn_utils::ContainsIdent;
+use crate::syn_utils::TryIdent;
 use quote::ToTokens;
 
 mod common;
+mod parameterized_test;
 mod test_dispatcher_fn;
 mod test_impl_fn;
 mod test_main_fn;
 
 pub(crate) use common::*;
+pub(crate) use parameterized_test::*;
 pub(crate) use test_dispatcher_fn::*;
 pub(crate) use test_impl_fn::*;
 pub(crate) use test_main_fn::*;
-
-/*
-pub(crate) struct TestSection {
-  pub section_name: syn::Ident,
-  pub section_path: Punctuated<syn::Expr, syn::Token![,]>,
-  pub subsection: Vec<TestSection>,
-}
-
-impl ToTokens for TestSection {
-  fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {}
-}
-
-/// Represents a test condition that gets executed.
-pub(crate) struct TestCondition {
-  pub test_name: syn::Ident,
-  pub test_dispatch_name: syn::Ident,
-  pub parameters: Punctuated<syn::Expr, syn::Token![,]>,
-  pub subsections: Vec<TestSection>,
-}
-
-impl ToTokens for TestCondition {
-  fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-    let test_name = &self.test_name;
-    let test_dispatch_name = &self.test_dispatch_name;
-    let parameters = &self.parameters;
-
-    let test_fn_definition: syn::ItemFn = parse_quote! {
-      #[test]
-      #[doc(hidden)]
-      #[ignore(dead_code)]
-      fn #test_name() -> ::neotest::TestResult {
-        let __context = ::neotest::__Context::default();
-        #test_dispatch_name(__context, #parameters)
-      }
-    };
-
-    test_fn_definition.to_tokens(tokens)
-  }
-}
-
-pub(crate) enum Subtest {
-  Condition(TestCondition),
-  Section(TestSection),
-}
-
-impl ToTokens for Subtest {
-  fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-    match &self {
-      Subtest::Condition(v) => v.to_tokens(tokens),
-      Subtest::Section(v) => v.to_tokens(tokens),
-    }
-  }
-}
-*/
 
 pub(crate) struct TestModel {
   test_main_fn: TestMainFn,
   test_fixture_fn: TestDispatcherFn,
   test_impl_fn: TestImplFn,
+  param_test_fns: Option<ParameterizedTests>,
 }
 
 impl TestModel {
-  pub fn from_inputs(inputs: TestInputs, test: syn::ItemFn) -> syn::Result<Self> {
+  pub fn from_inputs(mut inputs: TestInputs, test: syn::ItemFn) -> syn::Result<Self> {
+    Self::validate(&inputs, &test)?;
+
+    inputs.reorder(&test.sig);
+
+    Ok(Self::new_model(inputs, test))
+  }
+}
+
+// Validation
+
+impl TestModel {
+  /// Validates the inputs and function being tested for correctness
+  ///
+  /// # Arguments
+  ///
+  /// * `inputs` - the test inputs passed to the attribute
+  /// * `test` - the function performing the testing
+  fn validate(inputs: &TestInputs, test: &syn::ItemFn) -> syn::Result<()> {
     // Perform basic validation
     Self::validate_attributes(&test)?;
     Self::validate_parameters(&inputs, &test)?;
     Self::validate_generic_parameters(&inputs, &test)?;
-
-    // Form the model for the tests
-    let test_impl_fn = TestImplFn::new(test.attrs.clone(), test.sig.clone(), test.block);
-    let test_fixture_fn = TestDispatcherFn::new(
-      inputs.fixture.map(|v| v.ident),
-      test.attrs.clone(),
-      test.sig.clone(),
-      &test_impl_fn,
-      Default::default(),
-    );
-    let test_main_fn = TestMainFn::new(test.attrs.clone(), test.sig.clone(), &test_fixture_fn);
-
-    Ok(Self {
-      test_main_fn,
-      test_fixture_fn,
-      test_impl_fn,
-    })
+    Ok(())
   }
 
   fn validate_fixture_input(input: &FixtureInput, args: &[syn::FnArg]) -> syn::Result<()> {
@@ -138,7 +91,47 @@ impl TestModel {
       }
     }
 
-    // TODO(mrodusek): Check that all other arguments correspond to some named parameters
+    for ident in inputs.parameters.iter().map(|v| &v.ident) {
+      if !test.sig.inputs.contains_ident(&ident) {
+        let name = ident.to_string();
+        return Err(syn::Error::new(
+          ident.span(),
+          format!("Test input '{name}' is not a valid function parameter."),
+        ));
+      }
+    }
+
+    // TODO(mrodusek): Refactor this into smaller functions
+    for arg in args.iter() {
+      if let Some(ident) = arg.try_ident() {
+        let arg_inputs: Vec<&syn::Ident> = inputs
+          .parameters
+          .iter()
+          .map(|v| &v.ident)
+          .filter(|v| v.to_string() == ident.to_string())
+          .collect();
+        let count = arg_inputs.len();
+
+        if count != 1 {
+          let param_name = ident.to_string();
+          if count == 0 {
+            return Err(syn::Error::new(
+              ident.span(),
+              format!(
+                "Test function parameter '{param_name}' is not bound to test input. Use `parameter = {param_name} as ...` to set a parameter.",
+              ),
+            ));
+          } else if count > 1 {
+            let ident = arg_inputs[1];
+
+            return Err(syn::Error::new(
+              ident.span(),
+              format!("Test input '{param_name}' specified more than once."),
+            ));
+          }
+        }
+      }
+    }
     Ok(())
   }
 
@@ -149,10 +142,55 @@ impl TestModel {
   }
 }
 
+// Model Formation
+
+impl TestModel {
+  /// Makes a new model from the given test inputs and functions
+  ///
+  /// This assumes that the model has already been validated
+  ///
+  /// # Arguments
+  ///
+  /// * inputs - the inputs to the parameters
+  /// * test - the function performing testing
+  fn new_model(inputs: TestInputs, test: syn::ItemFn) -> Self {
+    // Form the model for the tests
+    let test_impl_fn = TestImplFn::new(test.attrs.clone(), test.sig.clone(), test.block);
+    let test_fixture_fn = TestDispatcherFn::new(
+      inputs.fixture.clone().map(|v| v.ident),
+      test.attrs.clone(),
+      test.sig.clone(),
+      &test_impl_fn,
+      Default::default(),
+    );
+    let param_test_fns = ParameterizedTests::new(
+      test.attrs.clone(),
+      test.sig.clone(),
+      inputs,
+      &test_fixture_fn,
+    );
+
+    let test_main_fn = TestMainFn::new(
+      test.attrs.clone(),
+      test.sig.clone(),
+      param_test_fns.as_ref(),
+      &test_fixture_fn,
+    );
+
+    Self {
+      test_main_fn,
+      test_fixture_fn,
+      test_impl_fn,
+      param_test_fns,
+    }
+  }
+}
+
 impl ToTokens for TestModel {
   fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
     self.test_impl_fn.to_tokens(tokens);
     self.test_fixture_fn.to_tokens(tokens);
     self.test_main_fn.to_tokens(tokens);
+    self.param_test_fns.to_tokens(tokens);
   }
 }

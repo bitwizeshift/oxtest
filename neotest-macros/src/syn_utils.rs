@@ -6,8 +6,10 @@ mod contains_ident;
 mod ident;
 mod inner;
 mod try_ident;
+mod type_sequence;
 
 pub use contains_ident::*;
 pub use ident::*;
 pub use inner::*;
 pub use try_ident::*;
+pub use type_sequence::*;

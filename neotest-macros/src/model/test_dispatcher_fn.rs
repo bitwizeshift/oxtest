@@ -1,10 +1,10 @@
 use quote::{ToTokens, TokenStreamExt};
-use syn::{parse_quote, punctuated::Punctuated, Attribute, Block, FnArg, Signature};
+use syn::punctuated::Punctuated;
+use syn::token::Comma;
+use syn::{parse_quote, Attribute, Block, FnArg, Signature};
 
-use crate::{
-  model::{attribute, fn_arg, ident, TestImplFn},
-  syn_utils::TryIdent,
-};
+use crate::model::{attribute, fn_arg, ident, TestImplFn};
+use crate::syn_utils::{ResolveFnArg, ResolveFnArgDecl, TryIdent};
 
 /// This models the fixture dispatch function that will be used to forward
 /// a fully-constructed fixture.
@@ -16,12 +16,12 @@ pub struct TestDispatcherFn {
 
 fn remove_fixture_arg(
   fixture: Option<&syn::Ident>,
-  inputs: Punctuated<FnArg, syn::Token![,]>,
-) -> Punctuated<FnArg, syn::Token![,]> {
+  inputs: Punctuated<FnArg, Comma>,
+) -> Punctuated<FnArg, Comma> {
   if fixture.is_some() {
     // TODO(mrodusek): can this be done more easily? It feels like we should be
     // able to just swap a FnArg from the Punctuated.
-    let mut new_inputs: Punctuated<FnArg, syn::Token![,]> = Default::default();
+    let mut new_inputs: Punctuated<FnArg, Comma> = Default::default();
     new_inputs.extend(inputs.into_iter().skip(1));
     new_inputs
   } else {
@@ -35,8 +35,13 @@ impl TestDispatcherFn {
     attrs: Vec<Attribute>,
     sig: Signature,
     impl_fn: &TestImplFn,
-    inputs: Punctuated<syn::Expr, syn::Token![,]>,
+    inputs: Punctuated<syn::Expr, Comma>,
   ) -> Self {
+    let maybe_fixture_arg = fixture
+      .as_ref()
+      .map(|_| sig.inputs.first().map(ToOwned::to_owned))
+      .flatten();
+
     let mut sig = sig;
     sig.ident = ident::new_test_dispatch(&sig.ident);
     sig.inputs = remove_fixture_arg(fixture.as_ref(), sig.inputs);
@@ -55,12 +60,19 @@ impl TestDispatcherFn {
     let impl_fn_ident = impl_fn.fn_ident();
 
     let block: Box<Block> = Box::new(match &fixture {
-      Some(v) => parse_quote! {
-        {
-          let __fixture = #v::prepare().unwrap();
-          #impl_fn_ident(__fixture, #inputs);
+      Some(v) => {
+        let fixture_arg = maybe_fixture_arg.unwrap();
+        let fixture_ident: syn::Ident = parse_quote! { __fixture };
+        let resolve_arg = ResolveFnArg::new(&fixture_ident, &fixture_arg);
+        let resolve_arg_decl = ResolveFnArgDecl::new(&fixture_ident, &fixture_arg);
+
+        parse_quote! {
+          {
+            let #resolve_arg_decl = #v::prepare().unwrap();
+            #impl_fn_ident(#resolve_arg, #inputs);
+          }
         }
-      },
+      }
       None => parse_quote! {
         {
           #impl_fn_ident(#inputs);

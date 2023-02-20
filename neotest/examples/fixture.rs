@@ -9,6 +9,10 @@ mod test {
       println!("Doing something");
     }
 
+    fn do_something_mut(&mut self) {
+      println!("Doing something mut");
+    }
+
     fn do_something_truthy(&self) -> bool {
       true
     }
@@ -18,6 +22,24 @@ mod test {
   #[neotest(fixture = SomeFixture)]
   fn test_fixture(f: SomeFixture) {
     f.do_something();
+    assert!(f.do_something_truthy());
+  }
+
+  #[neotest(fixture = SomeFixture)]
+  fn test_ref_fixture(f: &SomeFixture) {
+    f.do_something();
+    assert!(f.do_something_truthy());
+  }
+
+  #[neotest(fixture = SomeFixture)]
+  fn test_mut_fixture(mut f: SomeFixture) {
+    f.do_something_mut();
+    assert!(f.do_something_truthy());
+  }
+
+  #[neotest(fixture = SomeFixture)]
+  fn test_mut_ref_fixture(f: &mut SomeFixture) {
+    f.do_something_mut();
     assert!(f.do_something_truthy());
   }
 }

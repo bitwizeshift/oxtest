@@ -3,12 +3,14 @@
 //! This utilities enable better access to certain symbol types, as well as
 //! easier mechanisms for quoting.
 mod contains_ident;
+mod fn_arg;
 mod ident;
 mod inner;
 mod try_ident;
 mod type_sequence;
 
 pub use contains_ident::*;
+pub use fn_arg::*;
 pub use ident::*;
 pub use inner::*;
 pub use try_ident::*;

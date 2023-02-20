@@ -18,10 +18,10 @@ Neotest is a powerful and dynamic [xUnit][xunit-link] testing framework for Rust
 * [ ] **Sub-tests** for more granular reporting of test failures (#3)
 
 [xunit-link]: https://en.wikipedia.org/wiki/XUnit
-[docs-badge]: https://github.com/bitwizeshift/neotest/actions/workflows/deploy-gh-pages.yml/badge.svg
+[docs-badge]: https://github.com/bitwizeshift/neotest/actions/workflows/deploy-gh-pages.yaml/badge.svg
 [docs-link]: https://bitwizeshift.github.io/neotest/neotest
-[build-badge]: https://github.com/bitwizeshift/neotest/actions/workflows/build.yml/badge.svg
-[build-link]: https://github.com/bitwizeshift/neotest/actions/workflows/build.yml
+[build-badge]: https://github.com/bitwizeshift/neotest/actions/workflows/build.yaml/badge.svg
+[build-link]: https://github.com/bitwizeshift/neotest/actions/workflows/build.yaml
 [license-apache-badge]: https://img.shields.io/badge/license-Apache2.0-blue.svg
 [license-apache-link]: http://www.apache.org/licenses/LICENSE-2.0
 [license-mit-badge]: https://img.shields.io/badge/license-MIT-blue.svg

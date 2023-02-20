@@ -7,12 +7,9 @@ on:
   workflow_call:
   workflow_dispatch:
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
   format:
-    name: Format
+    name: Check Format
     runs-on: ubuntu-latest
 
     steps:
@@ -20,58 +17,57 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+        uses: ./.github/actions/rust-toolchain
         with:
-          toolchain: stable
-          default: true
-          profile: minimal
           components: rustfmt
 
       - name: Check format
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: |
+          cargo fmt --all -- --check
 
   check:
-    name: Cargo Check
+    name: Check Manifest
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
-          profile: minimal
+        uses: ./.github/actions/rust-toolchain
 
       - name: Check manifest
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --verbose --workspace
+        run: |
+          cargo check --verbose --workspace
 
-  doctest:
-    name: Documentation Test
+  clippy:
+    name: Static Analysis
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+        uses: ./.github/actions/rust-toolchain
         with:
-          toolchain: stable
-          default: true
+          components: clippy
+
+      - name: Check clippy
+        run: |
+          cargo clippy -- --deny clippy::all
+
+  doctest:
+    name: Doctest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install toolchain
+        uses: ./.github/actions/rust-toolchain
 
       - name: Doctest
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --doc --verbose
+        run: |
+          cargo test --doc --verbose
 
   build:
     name: Build
@@ -88,19 +84,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
+        uses: ./.github/actions/rust-toolchain
 
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --verbose
+        run: |
+          cargo build --verbose
 
   test:
-    name: Unit Tests
+    name: Test
     runs-on: ${{ matrix.os }}
     needs: [build]
     strategy:
@@ -115,13 +106,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
+        uses: ./.github/actions/rust-toolchain
 
       - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --verbose
+        run: |
+          cargo test --verbose

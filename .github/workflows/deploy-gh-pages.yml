@@ -8,7 +8,6 @@ jobs:
   generate:
     name: Generate cargo docs
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,7 +18,7 @@ jobs:
 
       - name: Generate Documentation
         run: |
-          cargo doc --no-deps
+          cargo doc --no-deps --document-private-items
           echo "<meta http-equiv=\"refresh\" content=\"0; url=neotest\">" > target/doc/index.html
           cp -r target/doc ./docs
 

@@ -38,9 +38,8 @@ impl TestInputs {
   fn index_of_arg(args: &Punctuated<FnArg, Comma>, ident: &syn::Ident) -> usize {
     args
       .iter()
-      .map(TryIdent::try_ident)
-      .flatten()
-      .position(|v| v.to_string() == ident.to_string())
+      .filter_map(TryIdent::try_ident)
+      .position(|v| *ident == *v)
       .unwrap()
   }
 
@@ -55,9 +54,8 @@ impl TestInputs {
     args
       .params
       .iter()
-      .map(TryIdent::try_ident)
-      .flatten()
-      .position(|v| v.to_string() == ident.to_string())
+      .filter_map(TryIdent::try_ident)
+      .position(|v| *ident == *v)
       .unwrap()
   }
 }

@@ -17,7 +17,6 @@ readme = "README.md"
 
 [lib]
 test = true
-examples = true
 
 [features]
 default = []

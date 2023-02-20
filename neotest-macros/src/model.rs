@@ -47,9 +47,9 @@ impl TestModel {
   /// * `test` - the function performing the testing
   fn validate(inputs: &TestInputs, test: &syn::ItemFn) -> syn::Result<()> {
     // Perform basic validation
-    Self::validate_attributes(&test)?;
-    Self::validate_parameters(&inputs, &test)?;
-    Self::validate_generic_parameters(&inputs, &test)?;
+    Self::validate_attributes(test)?;
+    Self::validate_parameters(inputs, test)?;
+    Self::validate_generic_parameters(inputs, test)?;
     Ok(())
   }
 
@@ -69,7 +69,7 @@ impl TestModel {
   fn validate_attributes(test: &syn::ItemFn) -> syn::Result<()> {
     for attr in test.attrs.iter() {
       if let Some(ident) = attr.path.get_ident() {
-        if ident.to_string() == "test" {
+        if *ident == "test" {
           return Err(syn::Error::new(
             ident.span(),
             "#[test] attribute cannot be specified for tests when using #[neotest]",
@@ -85,14 +85,14 @@ impl TestModel {
     let mut args: Vec<syn::FnArg> = Vec::from_iter(test.sig.inputs.iter().cloned());
 
     if let Some(fixture) = &inputs.fixture {
-      Self::validate_fixture_input(&fixture, &args)?;
+      Self::validate_fixture_input(fixture, &args)?;
       if !args.is_empty() {
         args.remove(0);
       }
     }
 
     for ident in inputs.parameters.iter().map(|v| &v.ident) {
-      if !test.sig.inputs.contains_ident(&ident) {
+      if !test.sig.inputs.contains_ident(ident) {
         let name = ident.to_string();
         return Err(syn::Error::new(
           ident.span(),
@@ -108,7 +108,7 @@ impl TestModel {
           .parameters
           .iter()
           .map(|v| &v.ident)
-          .filter(|v| v.to_string() == ident.to_string())
+          .filter(|v| *ident == v.to_string())
           .collect();
         let count = arg_inputs.len();
 
@@ -172,7 +172,7 @@ impl TestModel {
 
     let test_main_fn = TestMainFn::new(
       test.attrs.clone(),
-      test.sig.clone(),
+      test.sig,
       param_test_fns.as_ref(),
       &test_fixture_fn,
     );

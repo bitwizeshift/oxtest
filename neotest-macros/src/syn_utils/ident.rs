@@ -10,7 +10,7 @@ pub trait Ident {
 
 impl Ident for syn::Ident {
   fn ident(&self) -> &syn::Ident {
-    &self
+    self
   }
 }
 

@@ -18,10 +18,10 @@ use syn::{FnArg, Type};
 fn resolve_arg(arg: &FnArg) -> ResolveType {
   match &arg {
     FnArg::Receiver(ref rec) => {
-      let and = rec.reference.as_ref().map(|ref v| v.0);
+      let and = rec.reference.as_ref().map(|v| v.0);
       let mutability = rec.mutability.as_ref();
-      if and.is_some() {
-        ResolveType::Reference(and.unwrap(), mutability.copied())
+      if let Some(and) = and {
+        ResolveType::Reference(and, mutability.copied())
       } else {
         ResolveType::Owner
       }
@@ -68,18 +68,18 @@ impl<'a> ResolveFnArg<'a> {
   /// * `ident` - the ident of the variable that will resolve `arg`
   /// * `arg` - the argument to resolve
   pub fn new(ident: &'a syn::Ident, arg: &FnArg) -> Self {
-    let resolve_type = resolve_arg(&arg);
+    let resolve_type = resolve_arg(arg);
 
     match &resolve_type {
       ResolveType::Reference(and, mutability) => Self {
         and: Some(*and),
         mutability: *mutability,
-        ident: &ident,
+        ident,
       },
       ResolveType::Owner => Self {
         and: None,
         mutability: None,
-        ident: &ident,
+        ident,
       },
     }
   }
@@ -119,16 +119,16 @@ impl<'a> ResolveFnArgDecl<'a> {
   /// * `ident` - the ident of the variable that will resolve `arg`
   /// * `arg` - the argument to resolve
   pub fn new(ident: &'a syn::Ident, arg: &FnArg) -> Self {
-    let resolve_type = resolve_arg(&arg);
+    let resolve_type = resolve_arg(arg);
 
     match &resolve_type {
       ResolveType::Reference(_, mutability) => Self {
         mutability: *mutability,
-        ident: &ident,
+        ident,
       },
       ResolveType::Owner => Self {
         mutability: None,
-        ident: &ident,
+        ident,
       },
     }
   }

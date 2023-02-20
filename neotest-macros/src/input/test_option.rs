@@ -75,6 +75,6 @@ impl Parse for TestInputs {
       }
     }
 
-    return Ok(result);
+    Ok(result)
   }
 }

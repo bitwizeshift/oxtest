@@ -106,7 +106,7 @@ pub mod ident {
 
     // If we have more than one input, make this plural.
     if indices.len() > 1 {
-      let _ = write!(&mut out, "{}", "s");
+      let _ = write!(&mut out, "s");
     }
 
     for n in indices {

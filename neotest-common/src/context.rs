@@ -40,8 +40,12 @@ impl __Context {
   ///    "root" tests. This allows a base section to execute all sub-tests.
   #[doc(hidden)]
   pub fn section_enabled(&self, path: &[usize]) -> bool {
-    for i in 0..self.section_path.len().min(path.len()) {
-      if self.section_path[i] != path[i] {
+    for (i, path_segment) in path
+      .iter()
+      .enumerate()
+      .take(self.section_path.len().min(path.len()))
+    {
+      if self.section_path[i] != *path_segment {
         return false;
       }
     }

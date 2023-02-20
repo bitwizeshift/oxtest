@@ -39,8 +39,7 @@ impl TestDispatcherFn {
   ) -> Self {
     let maybe_fixture_arg = fixture
       .as_ref()
-      .map(|_| sig.inputs.first().map(ToOwned::to_owned))
-      .flatten();
+      .and_then(|_| sig.inputs.first().map(ToOwned::to_owned));
 
     let mut sig = sig;
     sig.ident = ident::new_test_dispatch(&sig.ident);
@@ -49,7 +48,7 @@ impl TestDispatcherFn {
 
     // Context is the last argument passed to tests
     let mut inputs = inputs;
-    for v in sig.inputs.iter().map(TryIdent::try_ident).flatten() {
+    for v in sig.inputs.iter().filter_map(TryIdent::try_ident) {
       inputs.push(parse_quote!(#v));
     }
 

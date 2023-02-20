@@ -22,7 +22,7 @@ where
   T: Ident,
 {
   fn try_ident(&self) -> Option<&syn::Ident> {
-    Some(&self.ident())
+    Some(self.ident())
   }
 }
 

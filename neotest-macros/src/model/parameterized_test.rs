@@ -27,7 +27,7 @@ impl ParameterizedTestInputs {
   ///
   /// * `inputs` - the parameter inputs to test with
   pub fn combine_inputs(inputs: &TestInputs) -> Vec<Self> {
-    let mut result: Vec<Self> = Vec::with_capacity(Self::input_size(&inputs));
+    let mut result: Vec<Self> = Vec::with_capacity(Self::input_size(inputs));
 
     Self::populate_into(&mut result, &inputs.parameters);
 
@@ -110,7 +110,7 @@ impl ParameterizedTestInputs {
       .parameters
       .iter()
       .map(|v| v.inputs.elems.len())
-      .fold(1, |acc, v| acc * v)
+      .product()
   }
 }
 
@@ -227,11 +227,11 @@ impl ParameterizedTests {
 
     let tests: Vec<ParameterizedTestFn> = params
       .iter()
-      .map(|v| ParameterizedTestFn::new(attrs.clone(), sig.clone(), v, &dispatch))
+      .map(|v| ParameterizedTestFn::new(attrs.clone(), sig.clone(), v, dispatch))
       .collect();
 
     Some(Self {
-      test_ident: sig.ident.clone(),
+      test_ident: sig.ident,
       tests,
     })
   }

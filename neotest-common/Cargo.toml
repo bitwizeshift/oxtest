@@ -1,12 +1,23 @@
 [package]
 name = "neotest_common"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
-keywords = ["test", "fixture"]
-license = "MIT OR Apache-2.0"
+categories = ["development-tools::testing"]
+description = """
+An implementation-crate for the `neotest` library.
+This provides shared content to the `neotest-macros` crate, which is needed for
+ultimately implementing all of `neotest`.
+"""
+authors = ["Matthew Rodusek <7519129+bitwizeshift@users.noreply.github.com>"]
+repository = "https://github.com/bitwizeshift/neotest"
+homepage = "https://github.com/bitwizeshift/neotest"
+documentation = "https://bitwizeshift.github.io/neotest/neotest"
+keywords = ["test", "testing", "xunit", "fixture", "proc-macros"]
+license = "MIT / Apache-2.0"
+readme = "README.md"
 
 [lib]
+test = true
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
+[features]
+default = []

@@ -2,9 +2,18 @@
 name = "neotest"
 version = "0.0.1"
 edition = "2021"
-
-keywords = ["test", "fixture"]
-license = "MIT OR Apache-2.0"
+categories = ["development-tools::testing"]
+description = """
+Rust xUnit testing framework leveraging procedural macros to allow for
+fixture-based and parameterized testing.
+"""
+authors = ["Matthew Rodusek <7519129+bitwizeshift@users.noreply.github.com>"]
+repository = "https://github.com/bitwizeshift/neotest"
+homepage = "https://github.com/bitwizeshift/neotest"
+documentation = "https://bitwizeshift.github.io/neotest/neotest"
+keywords = ["test", "testing", "xunit", "fixture", "proc-macros"]
+license = "MIT / Apache-2.0"
+readme = "README.md"
 
 [lib]
 test = true
@@ -14,7 +23,7 @@ examples = true
 default = []
 
 [dependencies]
-neotest_macros = { path = "../neotest-macros" }
-neotest_common = { path = "../neotest-common" }
+neotest_macros = { version = "^0.0.1", path = "../neotest-macros"}
+neotest_common = { version = "^0.0.1", path = "../neotest-common"}
 
 [dev-dependencies]

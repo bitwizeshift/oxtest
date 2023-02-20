@@ -2,10 +2,12 @@
 //!
 //! This utilities enable better access to certain symbol types, as well as
 //! easier mechanisms for quoting.
+mod contains_ident;
 mod ident;
 mod inner;
 mod try_ident;
 
+pub(crate) use contains_ident::*;
 pub(crate) use ident::*;
 pub(crate) use inner::*;
 pub(crate) use try_ident::*;

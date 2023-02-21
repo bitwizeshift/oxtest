@@ -53,7 +53,7 @@ jobs:
 
       - name: Check clippy
         run: |
-          cargo clippy -- --deny clippy::all
+          cargo clippy --no-deps -- --deny clippy::all
 
   doctest:
     name: Doctest

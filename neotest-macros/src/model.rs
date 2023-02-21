@@ -1,11 +1,11 @@
-//! This module contains the various types parsed
-//!
+//! This module contains the various model types used to represent a suite of
+//! unit tests in this framework.
+use quote::ToTokens;
 
 use crate::input::FixtureInput;
 use crate::input::TestInputs;
 use crate::syn_utils::ContainsIdent;
 use crate::syn_utils::TryIdent;
-use quote::ToTokens;
 
 mod common;
 mod parameterized_test;
@@ -13,12 +13,20 @@ mod test_dispatcher_fn;
 mod test_impl_fn;
 mod test_main_fn;
 
+// Re-export all submodule contents.
+
+#[doc(inline)]
 pub use common::*;
+#[doc(inline)]
 pub use parameterized_test::*;
+#[doc(inline)]
 pub use test_dispatcher_fn::*;
+#[doc(inline)]
 pub use test_impl_fn::*;
+#[doc(inline)]
 pub use test_main_fn::*;
 
+/// The primary type used for modeling a test.
 pub struct TestModel {
   test_main_fn: TestMainFn,
   test_fixture_fn: TestDispatcherFn,

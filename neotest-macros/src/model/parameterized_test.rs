@@ -219,8 +219,6 @@ impl ParameterizedTests {
     dispatch: &TestDispatcherFn,
   ) -> Option<Self> {
     let params = ParameterizedTestInputs::combine_inputs(&inputs);
-    let len = params.len();
-    println!("{len} params specified.");
     if params.is_empty() {
       return None;
     }

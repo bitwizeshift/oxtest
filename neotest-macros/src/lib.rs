@@ -2,9 +2,10 @@ use proc_macro::TokenStream;
 use quote::ToTokens;
 use syn::parse_macro_input;
 
+pub(crate) mod common;
 pub(crate) mod derive_fixture;
 pub(crate) mod input;
-pub(crate) mod model;
+pub(crate) mod suite;
 pub(crate) mod syn_utils;
 
 /// A derive-macro for automatically implementing the [`Fixture`] trait.
@@ -76,19 +77,6 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
   let _ = parse_macro_input!(attribute as syn::parse::Nothing);
 
   item
-}
-
-/// A helper macro that will invoke an expression and generate a compile-error
-/// if it generates an error.
-macro_rules! syn_try {
-  ($Expr:expr) => {
-    match $Expr {
-      Ok(data) => data,
-      Err(err) => {
-        return TokenStream::from(err.to_compile_error());
-      }
-    }
-  };
 }
 
 /// The primary macro used for creating neotests
@@ -263,11 +251,10 @@ pub fn neotest(attribute: TokenStream, item: TokenStream) -> TokenStream {
   let input = syn::parse_macro_input!(attribute as input::TestInputs);
   let item = syn::parse_macro_input!(item as syn::ItemFn);
 
-  // Form model
-  let model = syn_try! { model::TestModel::from_inputs(input, item) };
-
-  // Generate output
-  model.to_token_stream().into()
+  match suite::TestSuite::from_inputs(input, item) {
+    Ok(suite) => suite.to_token_stream().into(),
+    Err(error) => TokenStream::from(error.to_compile_error()),
+  }
 }
 
 /// An exposition-macro for test sections.

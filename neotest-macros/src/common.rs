@@ -1,3 +1,4 @@
+#![allow(unused)]
 /// A module containing helper attributes regularly used in the internal-functions
 /// within neotest.
 pub mod attribute {
@@ -84,7 +85,7 @@ pub mod ident {
   /// * `base` - the base name of the test (what is specified by the user)
   pub fn new_test_dispatch(base: &Ident) -> Ident {
     let name_str = base.to_string();
-    let new_ident_str = format!("__neotest_{name_str}_dispatcher");
+    let new_ident_str = format!("{name_str}_dispatcher");
 
     Ident::new(&new_ident_str, base.span())
   }
@@ -114,5 +115,9 @@ pub mod ident {
     }
 
     Ident::new(&out, span)
+  }
+
+  pub fn new_test_section(section: usize, span: Span) -> Ident {
+    Ident::new(&format!("section_{}", section), span)
   }
 }

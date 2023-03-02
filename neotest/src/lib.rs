@@ -21,10 +21,5 @@ pub use neotest_macros::{neotest, Fixture};
 #[doc(inline)]
 pub use neotest_common::{Fixture, Result};
 
-// Internal stuff
-
-#[doc(hidden)]
-pub mod __internal {
-  #[doc(hidden)]
-  pub use neotest_common::__Context;
-}
+#[doc(hidden, inline)]
+pub use neotest_common::__internal;

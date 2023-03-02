@@ -39,7 +39,7 @@ pub mod path {
   use syn::Path;
 
   pub fn crate_internal() -> Path {
-    parse_quote! { ::neotest::__internal }
+    parse_quote! { ::neotest_common::__internal }
   }
 }
 

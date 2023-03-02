@@ -19,8 +19,9 @@ pub(crate) mod syn_utils;
 ///
 /// Basic use:
 ///
-/// ```ignore
-/// use neotest::Fixture;
+/// ```
+/// # use neotest_macros::Fixture;
+/// # use neotest_common::Fixture;
 /// #[derive(Default, Fixture)]
 /// struct MyFixture {
 ///     // ...
@@ -39,13 +40,14 @@ pub fn fixture(input: TokenStream) -> TokenStream {
 /// than through argument injection. For example, take this typical
 /// injected fixture:
 ///
-/// ```ignore
-/// # use neotest::Fixture;
+/// ```
+/// # use neotest_macros::{Fixture, neotest};
+/// # use neotest_common::Fixture;
 /// #[derive(Default, Fixture)]
 /// struct TestFixture {};
 ///
 /// #[neotest(
-///     fixture = testFixture,
+///     fixture = TestFixture,
 ///     parameter = a as [42, 32]
 /// )]
 /// fn test_some_thing(f: TestFixture, a: u32) {
@@ -127,7 +129,8 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
 ///
 /// To execute tests with the same sets of inputs, use tuples instead:
 ///
-/// ```ignore
+/// ```
+/// # use neotest_macros::neotest;
 /// #[neotest(parameter = a as [(1, 1), (2, 2), /* etc */])]
 /// fn test_something(a: (u32, u32)){ /* ... */ }
 /// ```
@@ -136,8 +139,8 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
 ///
 /// Basic use:
 ///
-/// ```ignore
-/// use neotest::neotest;
+/// ```
+/// # use neotest_macros::neotest;
 ///
 /// // Equivalent to just #[test]
 /// #[neotest]
@@ -148,9 +151,9 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
 ///
 /// Using fixtures:
 ///
-/// ```ignore
-/// use neotest::neotest;
-/// use neotest::Fixture;
+/// ```
+/// # use neotest_macros::{neotest, Fixture};
+/// # use neotest_common::Fixture;
 ///
 /// // Derive macro can be used to create fixture, or can be implemented
 /// // directly with `impl Fixture for TestFixture`.
@@ -168,8 +171,8 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
 ///
 /// Test parameter inputs:
 ///
-/// ```ignore
-/// use neotest::neotest;
+/// ```
+/// # use neotest_macros::neotest;
 ///
 /// // Calls test_something_with_parameter with 0xdead and 0xbeef
 /// #[neotest(parameter = a as [0xdead, 0xbeef])]
@@ -181,7 +184,7 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
 /// Test generic type-parameter inputs:
 ///
 /// ```ignore
-/// use neotest::neotest;
+/// # use neotest_macros::neotest;
 ///
 /// // Calls test_something_with_generic_type_parameter with T as u32 and u64
 /// #[neotest(type_parameter = T as [u32, u64])]
@@ -193,7 +196,7 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
 /// Test generic const-parameter inputs:
 ///
 /// ```ignore
-/// use neotest::neotest;
+/// # use neotest_macros::neotest;
 ///
 /// // Calls test_something_with_generic_const_parameter with VALUE as 0xdead
 /// // and 0xbeef
@@ -206,8 +209,8 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
 /// Combined with everything:
 ///
 /// ```ignore
-/// use neotest::neotest;
-/// use neotest::Fixture;
+/// # use neotest_macros::neotest;
+/// # use neotest_common::{Fixture, Result};
 ///
 /// // Derive macro can be used to create fixture, or can be implemented
 /// // directly with `impl Fixture for TestFixture`.
@@ -217,8 +220,10 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
 /// }
 ///
 /// impl Fixture for TestFixture {
-///    fn set_up(&mut self) { /* set up logic */ }
-///    fn tear_down(&mut self) { /* tear-down logic */ }
+///    fn prepare() -> Result<Self> {
+///      /* set up logic */
+///      Ok(TestFixture{/* ... */})
+///    }
 /// }
 ///
 /// // Calls test_something_with_everything with all combinations of inputs.
@@ -264,8 +269,7 @@ pub fn neotest(attribute: TokenStream, item: TokenStream) -> TokenStream {
 /// # Examples
 ///
 /// ```ignore
-/// # use crate::neotest
-/// # use crate::section
+/// # use neotest_macros::{section, neotest};
 /// #[neotest]
 /// fn test_something() {
 ///     let sut: Vec<u8> = Vec::default();

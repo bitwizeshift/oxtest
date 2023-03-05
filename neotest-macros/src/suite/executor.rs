@@ -84,7 +84,7 @@ impl TestExecutor {
     })
     .to_tokens(tokens);
     FunctionDefinition(&self.sig).surround(tokens, |tokens| {
-      self.dispatch_call.to_tokens_with_call(tokens, &dispatcher);
+      self.dispatch_call.to_tokens_with_call(tokens, dispatcher);
     });
 
     // Only define submodules when we have subtests to run
@@ -98,7 +98,7 @@ impl TestExecutor {
       use_stmt.to_tokens(tokens);
 
       for subtest in self.subtests.iter() {
-        subtest.to_tokens_with_call(tokens, &dispatcher);
+        subtest.to_tokens_with_call(tokens, dispatcher);
       }
     });
   }

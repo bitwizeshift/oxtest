@@ -23,7 +23,7 @@ impl ParameterizedTestSuite {
   where
     F: FnOnce(&mut TestExecutor),
   {
-    let mut executor = TestExecutor::new(name, self.attrs.clone(), params, &test);
+    let mut executor = TestExecutor::new(name, self.attrs.clone(), params, test);
     f(&mut executor);
     self.subtests.push(executor);
   }
@@ -182,10 +182,10 @@ impl TestSuite {
     inputs: &TestInputs,
     test: &Test,
   ) -> Vec<TestExecutor> {
-    let test_cases = TestParameters::multiplex(&inputs);
+    let test_cases = TestParameters::multiplex(inputs);
     let mut result: Vec<TestExecutor> = Vec::with_capacity(test_cases.len());
     for (ident, params) in test_cases.into_iter() {
-      result.push(TestExecutor::new(ident, attrs.clone(), params, &test));
+      result.push(TestExecutor::new(ident, attrs.clone(), params, test));
     }
     result
   }

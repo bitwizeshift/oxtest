@@ -62,14 +62,14 @@ impl TestDispatcher {
 
 impl TestDispatcher {
   pub fn to_tokens_with_call(&self, tokens: &mut TokenStream, test: &Test) {
-    const FIXTURE_NAME: &'static str = "__fixture";
+    const FIXTURE_NAME: &str = "__fixture";
     let fixture_ident = syn::Ident::new(FIXTURE_NAME, Span::call_site());
 
     // Define the test function
     tokens.append_all(self.attrs.iter());
     FunctionDefinition(&self.sig).surround(tokens, |tokens| {
       self.prepend_fixture(&fixture_ident, tokens);
-      FunctionCall(&test.test_name()).arguments(tokens, |tokens| {
+      FunctionCall(test.test_name()).arguments(tokens, |tokens| {
         self.prepend_fixture_arg(&fixture_ident, tokens);
         for arg in self.sig.inputs.iter() {
           arg.try_ident().to_tokens(tokens);
@@ -84,7 +84,7 @@ impl TestDispatcher {
       Some(v) => {
         let ident = &v.ident;
         let fixture_arg = &v.arg;
-        let resolve_arg_decl = ResolveFnArgDecl::new(&fixture_ident, &fixture_arg);
+        let resolve_arg_decl = ResolveFnArgDecl::new(fixture_ident, fixture_arg);
 
         let block: Stmt = parse_quote! {
           let #resolve_arg_decl = #ident::prepare().unwrap();
@@ -98,7 +98,7 @@ impl TestDispatcher {
   fn prepend_fixture_arg(&self, fixture_ident: &syn::Ident, tokens: &mut TokenStream) {
     if let Some(fixture) = &self.fixture {
       let fixture_arg = &fixture.arg;
-      let resolve_arg = ResolveFnArg::new(&fixture_ident, &fixture_arg);
+      let resolve_arg = ResolveFnArg::new(fixture_ident, fixture_arg);
       resolve_arg.to_tokens(tokens);
       Comma::default().to_tokens(tokens);
     }

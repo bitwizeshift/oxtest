@@ -70,7 +70,7 @@ impl DispatcherCall {
       Super::default().to_tokens(tokens);
       Colon2::default().to_tokens(tokens);
     }
-    FunctionCall(&dispatch.dispatcher_name()).arguments(tokens, |tokens| {
+    FunctionCall(dispatch.dispatcher_name()).arguments(tokens, |tokens| {
       self
         .parameters
         .to_tokens_with_context(tokens, &context_ident);

@@ -49,8 +49,7 @@ impl TestAttributes {
   fn has_test_attribute(attrs: &[Attribute]) -> bool {
     attrs
       .iter()
-      .map(|v| v.path.get_ident())
-      .filter_map(|v| v)
+      .filter_map(|v| v.path.get_ident())
       .any(|v| *v == "test")
   }
 }

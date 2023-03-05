@@ -34,7 +34,7 @@ impl TestParameters {
   }
 
   pub fn multiplex(inputs: &TestInputs) -> Vec<(syn::Ident, TestParameters)> {
-    let test_cases = MultiplexedTestParameters::multiplex(&inputs);
+    let test_cases = MultiplexedTestParameters::multiplex(inputs);
 
     let mut result: Vec<(syn::Ident, TestParameters)> = Vec::with_capacity(test_cases.len());
     for param in test_cases.into_iter() {

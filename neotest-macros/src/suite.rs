@@ -4,6 +4,7 @@ mod dispatcher_call;
 mod executor;
 mod parameters;
 mod section_path;
+#[allow(clippy::module_inception)]
 mod suite;
 mod test;
 

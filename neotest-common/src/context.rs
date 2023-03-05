@@ -4,7 +4,8 @@
 /// This enables subsections of tests to each be executed independently.
 #[doc(hidden)]
 pub struct __Context {
-  section_path: Vec<usize>,
+  section_path: &'static [usize],
+  current: usize,
 }
 
 #[allow(dead_code)]
@@ -15,40 +16,48 @@ impl __Context {
   ///
   /// * section_path - the path of sections to take to test
   #[doc(hidden)]
-  pub fn path(section_path: &[usize]) -> Self {
+  pub fn path(section_path: &'static [usize]) -> Self {
     Self {
-      section_path: section_path.into(),
+      section_path,
+      current: 0,
     }
   }
 
-  /// Creates a new [`__Context`] that is corresponds to executing _all_ tests.
+  /// Tests whether a context is allowed to execute a subtest
   ///
-  /// This is a special context that is supplied for the top-level test-runners.
-  #[doc(hidden)]
-  pub fn all_tests() -> Self {
+  /// # Developer Note
+  ///
+  /// This function is `mut` as this internally counts how many subtests have
+  /// been tested to determine whether the current one is executable.
+  pub fn can_execute_subtest(&mut self) -> bool {
+    let current = self.current;
+    self.current += 1;
+    self.test_enabled(current)
+  }
+
+  /// Produce a sub-context for a subtest
+  pub fn subtest(&self) -> Self {
     Self {
-      section_path: Default::default(),
+      section_path: self.pop_prefix(),
+      current: 0,
     }
   }
 
-  /// Queries whether the specified section `path` is currently enabled in a
-  /// given test.
+  /// Tests whether the test at the specified index is enabled
   ///
-  /// This will return `true` in one of two conditions:
+  /// # Arguments
   ///
-  /// 1. The [`__Context`]'s path is shorter than `path`. This is used to determine
-  ///    "root" tests. This allows a base section to execute all sub-tests.
-  #[doc(hidden)]
-  pub fn section_enabled(&self, path: &[usize]) -> bool {
-    for (i, path_segment) in path
-      .iter()
-      .enumerate()
-      .take(self.section_path.len().min(path.len()))
-    {
-      if self.section_path[i] != *path_segment {
-        return false;
-      }
+  /// * `test` - the index of the subtest to test
+  fn test_enabled(&self, test: usize) -> bool {
+    self.section_path.is_empty() || self.section_path[0] == test
+  }
+
+  /// Removes the first element of the [`__Context`], if possible.
+  fn pop_prefix(&self) -> &'static [usize] {
+    if self.section_path.is_empty() {
+      self.section_path
+    } else {
+      &self.section_path[1..]
     }
-    true
   }
 }

@@ -16,7 +16,7 @@ impl Test {
     Self {
       attrs: item.attrs,
       sig: Self::test_signature(item.sig),
-      block: Self::translate_sections(item.block),
+      block: item.block,
     }
   }
 
@@ -33,23 +33,13 @@ impl Test {
     &self.attrs
   }
 
-  /// Translates `#[section]` attributes in the given Block into context checks
-  ///
-  /// This is used to enable individual sub-tests.
-  ///
-  /// # Arguments
-  ///
-  /// * `block` - the block to translate
-  fn translate_sections(block: Box<Block>) -> Box<Block> {
-    // TODO(mrodusek): Translate #[section] attributes to context subtest checks
-    block
-  }
-
   fn test_signature(mut sig: Signature) -> Signature {
     let context_ident = ident::context();
     let context_ty = ty::context();
     sig.ident = ident::new_test_impl(&sig.ident);
-    sig.inputs.push(parse_quote!(#context_ident: #context_ty));
+    sig
+      .inputs
+      .push(parse_quote!(mut #context_ident: #context_ty));
     sig
   }
 }

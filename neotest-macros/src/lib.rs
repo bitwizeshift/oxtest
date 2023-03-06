@@ -1,6 +1,8 @@
+use input::SubtestInput;
 use proc_macro::TokenStream;
 use quote::ToTokens;
 use syn::parse_macro_input;
+use syn_utils::Inner;
 
 pub(crate) mod common;
 pub(crate) mod derive_fixture;
@@ -79,6 +81,32 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
   let _ = parse_macro_input!(attribute as syn::parse::Nothing);
 
   item
+}
+
+struct Subtest {
+  stmts: Vec<syn::Stmt>,
+}
+
+impl quote::ToTokens for Subtest {
+  fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+    let context = common::ident::context();
+    let inner = Inner(&self.stmts);
+    let stmt: syn::Stmt = syn::parse_quote! {
+      if #context.can_execute_subtest() {
+        #[allow(unused)]
+        let mut #context = #context.subtest();
+        #inner
+      };
+    };
+    stmt.to_tokens(tokens);
+  }
+}
+
+#[proc_macro]
+pub fn subtest(item: TokenStream) -> TokenStream {
+  let input = syn::parse_macro_input!(item as SubtestInput);
+  let subtest = Subtest { stmts: input.stmts };
+  subtest.to_token_stream().into()
 }
 
 /// The primary macro used for creating neotests

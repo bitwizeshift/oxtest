@@ -3,6 +3,7 @@ mod dispatcher;
 mod dispatcher_call;
 mod executor;
 mod parameters;
+mod section_graph;
 mod section_path;
 #[allow(clippy::module_inception)]
 mod suite;
@@ -18,6 +19,8 @@ pub use dispatcher_call::*;
 pub use executor::*;
 #[doc(inline)]
 pub use parameters::*;
+#[doc(inline)]
+pub use section_graph::*;
 #[doc(inline)]
 pub use section_path::*;
 #[doc(inline)]

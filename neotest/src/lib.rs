@@ -16,7 +16,7 @@
 //!
 //! The current state of testing frameworks is... interesting.
 #[doc(inline)]
-pub use neotest_macros::{neotest, Fixture};
+pub use neotest_macros::{neotest, subtest, Fixture};
 
 #[doc(inline)]
 pub use neotest_common::{Fixture, Result};

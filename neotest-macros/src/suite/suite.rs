@@ -4,7 +4,7 @@ use quote::ToTokens;
 use syn::{parse_quote, Block, ItemFn, Signature, Stmt};
 
 use crate::input::{FixtureInput, TestInputs};
-use crate::suite::{Test, TestAttributes};
+use crate::suite::{Section, SectionGraph, Test, TestAttributes};
 use crate::syn_utils::{ContainsIdent, FunctionDefinition, ModuleDefinition, TryIdent};
 
 use super::{TestDispatcher, TestExecutor, TestParameters};
@@ -103,31 +103,31 @@ impl TestSuite {
     inputs.reorder(&test.sig);
 
     if inputs.parameters.is_empty() {
-      Ok(Self::standard_from_inputs(inputs, test))
+      Self::standard_from_inputs(inputs, test)
     } else {
-      Ok(Self::parameterized_from_inputs(inputs, test))
+      Self::parameterized_from_inputs(inputs, test)
     }
   }
 
-  fn parameterized_from_inputs(inputs: TestInputs, mut test_fn: ItemFn) -> Self {
+  fn parameterized_from_inputs(inputs: TestInputs, mut test_fn: ItemFn) -> syn::Result<Self> {
     let sig = test_fn.sig.clone();
-    let graph = Self::translate_sections(&mut test_fn.block);
+    let graph = Self::translate_sections(&mut test_fn.block)?;
 
     let test = Test::new(test_fn);
     let attrs = TestAttributes::new(test.attrs().into());
     let main = TestDispatcher::new(&test, inputs.fixture.as_ref().cloned().map(|v| v.ident));
     let mut subtests = Self::multiplex_subtests(attrs.clone(), &inputs, &test);
     for subtest in &mut subtests {
-      Self::apply_subsections(subtest, &graph.subsections);
+      Self::apply_subsections(subtest, graph.subsections());
     }
 
-    Self::Parameterized(ParameterizedTestSuite {
+    Ok(Self::Parameterized(ParameterizedTestSuite {
       attrs,
       main,
       sig: Self::suite_signature(sig),
       test,
       subtests,
-    })
+    }))
   }
 
   fn suite_signature(mut sig: Signature) -> Signature {
@@ -144,35 +144,41 @@ impl TestSuite {
   ///
   /// * `inputs` - the test input arguments supplied in the test attribute
   /// * `test` - the definition of the test function
-  fn standard_from_inputs(inputs: TestInputs, mut test_fn: ItemFn) -> Self {
+  fn standard_from_inputs(inputs: TestInputs, mut test_fn: ItemFn) -> syn::Result<Self> {
     let name = test_fn.sig.ident.clone();
-    let graph = Self::translate_sections(&mut test_fn.block);
+    let graph = Self::translate_sections(&mut test_fn.block)?;
 
     let test = Test::new(test_fn);
     let attrs = TestAttributes::new(test.attrs().into());
     let main = TestDispatcher::new(&test, inputs.fixture.map(|v| v.ident));
     let mut root = TestExecutor::new(name, attrs, Default::default(), &test);
 
-    Self::apply_subsections(&mut root, &graph.subsections);
+    Self::apply_subsections(&mut root, graph.subsections());
 
-    Self::Standard(StandardTestSuite { test, main, root })
+    Ok(Self::Standard(StandardTestSuite { test, main, root }))
   }
 
   /// Translates `#[section]` attributes within the test function into
   /// context-section-path checks, and returns a graph of all discovered
   /// sections.
-  fn translate_sections(block: &mut Box<Block>) -> SectionGraph {
-    // TODO(mrodusek): Implement translation for sections
-    Default::default()
+  fn translate_sections(block: &mut Box<Block>) -> syn::Result<SectionGraph> {
+    SectionGraph::discover_subtests(block)
   }
 
+  /// Applies subsections to a given test-executor so that it can invoke
+  /// subtests.
+  ///
+  /// # Arguments
+  ///
+  /// * `executor` - the executor for the test
+  /// * `sections` - the sections to apply
   fn apply_subsections(executor: &mut TestExecutor, sections: &[Section]) {
     if sections.is_empty() {
       return;
     }
     for section in sections.iter() {
-      executor.push_subtest(section.index, Some(section.name.clone()), |executor| {
-        Self::apply_subsections(executor, &sections[1..]);
+      executor.push_subtest(section.index, section.name.clone(), |executor| {
+        Self::apply_subsections(executor, section.subsections());
       });
     }
   }
@@ -189,19 +195,6 @@ impl TestSuite {
     }
     result
   }
-}
-
-#[allow(dead_code)]
-struct Section {
-  index: usize,
-  name: syn::Ident,
-  subsection: Vec<Section>,
-}
-
-#[derive(Default)]
-#[allow(dead_code)]
-struct SectionGraph {
-  subsections: Vec<Section>,
 }
 
 impl TestSuite {

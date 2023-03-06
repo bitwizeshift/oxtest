@@ -4,11 +4,6 @@ pub mod attribute {
   use syn::parse_quote;
   use syn::Attribute;
 
-  /// A helper function for creating the attribute `#[doc(hidden)]`
-  pub fn doc_hidden() -> Attribute {
-    parse_quote!(#[doc(hidden)])
-  }
-
   /// A helper function for creating the attribute `#[allow(dead_code)]`
   pub fn allow_dead_code() -> Attribute {
     parse_quote!(#[allow(dead_code)])
@@ -17,20 +12,6 @@ pub mod attribute {
   /// A helper function for creating the attribute `#[test]`
   pub fn test() -> Attribute {
     parse_quote!(#[test])
-  }
-}
-
-/// A module containing helper function argument definitions used in the
-/// internal-functions within neotest.
-pub mod fn_arg {
-  use syn::parse_quote;
-  use syn::FnArg;
-
-  pub fn context() -> FnArg {
-    let context = super::ty::context();
-    let context_ident = super::ident::context();
-
-    parse_quote! { #context_ident: #context }
   }
 }
 

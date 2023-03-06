@@ -46,3 +46,9 @@ impl TryIdent for FnArg {
     }
   }
 }
+
+impl TryIdent for syn::Path {
+  fn try_ident(&self) -> Option<&syn::Ident> {
+    self.segments.last().map(|v| &v.ident)
+  }
+}

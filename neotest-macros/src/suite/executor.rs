@@ -2,7 +2,6 @@ use proc_macro2::TokenStream;
 use quote::ToTokens;
 use syn::{parse_quote, Signature, Stmt, VisPublic, Visibility};
 
-use crate::common::ident;
 use crate::suite::TestAttributes;
 use crate::syn_utils::{FunctionDefinition, ModuleDefinition};
 
@@ -55,14 +54,13 @@ impl TestExecutor {
   }
 
   /// Creates a derived subtest with a new index, and also provides
-  pub fn push_subtest<F>(&mut self, subsection: usize, name: Option<syn::Ident>, f: F)
+  pub fn push_subtest<F>(&mut self, subsection: usize, name: syn::Ident, f: F)
   where
     F: FnOnce(&mut TestExecutor),
   {
     let dispatcher = self.dispatch_call.subsection(subsection);
     let mut new_sig = self.sig.clone();
-    new_sig.ident =
-      name.unwrap_or_else(|| ident::new_test_section(subsection, self.sig.ident.span()));
+    new_sig.ident = name;
 
     let mut test = Self {
       attrs: self.attrs.clone(),

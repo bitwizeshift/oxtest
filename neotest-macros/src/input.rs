@@ -6,6 +6,7 @@
 mod const_parameter_input;
 mod fixture_input;
 mod parameter_input;
+mod subtest_input;
 mod test_inputs;
 mod test_option;
 mod type_parameter_input;
@@ -18,6 +19,8 @@ pub use const_parameter_input::*;
 pub use fixture_input::*;
 #[doc(inline)]
 pub use parameter_input::*;
+#[doc(inline)]
+pub use subtest_input::*;
 #[doc(inline)]
 pub use test_inputs::*;
 #[doc(inline)]

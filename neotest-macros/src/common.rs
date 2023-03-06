@@ -1,4 +1,3 @@
-#![allow(unused)]
 /// A module containing helper attributes regularly used in the internal-functions
 /// within neotest.
 pub mod attribute {
@@ -26,6 +25,7 @@ pub mod attribute {
 pub mod fn_arg {
   use syn::parse_quote;
   use syn::FnArg;
+
   pub fn context() -> FnArg {
     let context = super::ty::context();
     let context_ident = super::ident::context();
@@ -59,11 +59,11 @@ pub mod ty {
 pub mod ident {
 
   use proc_macro2::Span;
-  use syn::parse_quote;
+  use quote::format_ident;
   use syn::Ident;
 
   pub fn context() -> Ident {
-    parse_quote!(__context)
+    format_ident!("__context")
   }
 
   /// Creates an ident used for performing the actual test itself
@@ -72,10 +72,7 @@ pub mod ident {
   ///
   /// * `base` - the base name of the test (what is specified by the user)
   pub fn new_test_impl(base: &Ident) -> Ident {
-    let name_str = base.to_string();
-    let new_ident_str = format!("__neotest_{name_str}_impl");
-
-    Ident::new(&new_ident_str, base.span())
+    format_ident!("__neotest_{base}_impl")
   }
 
   /// Creates an ident used for dispatching the fixture object
@@ -84,10 +81,7 @@ pub mod ident {
   ///
   /// * `base` - the base name of the test (what is specified by the user)
   pub fn new_test_dispatch(base: &Ident) -> Ident {
-    let name_str = base.to_string();
-    let new_ident_str = format!("{name_str}_dispatcher");
-
-    Ident::new(&new_ident_str, base.span())
+    format_ident!("{base}_dispatcher")
   }
 
   /// Creates an ident for test input dispatch functions
@@ -115,9 +109,5 @@ pub mod ident {
     }
 
     Ident::new(&out, span)
-  }
-
-  pub fn new_test_section(section: usize, span: Span) -> Ident {
-    Ident::new(&format!("section_{}", section), span)
   }
 }

@@ -1,41 +1,22 @@
-#[derive(Default, PartialEq, PartialOrd, Debug)]
-pub struct Error {
-  message: String,
-}
+/// A generic error type that is returned from all tests.
+///
+/// This type can polymorphically take the form of any type that implements
+/// [`Error`], which allows any and all generic errors to be a valid return type
+/// from tests.
+///
+/// [`Error`]: std::error::Error
+pub type Error = Box<dyn std::error::Error>;
 
-impl std::fmt::Display for Error {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    self.message.fmt(f)
-  }
-}
-
-impl std::error::Error for Error {}
-
-impl Error {
-  pub fn from_error<T: std::error::Error>(e: T) -> Self {
-    Self {
-      message: e.to_string(),
-    }
-  }
-
-  pub fn new() -> Self {
-    Self::default()
-  }
-}
-
-impl<T> From<T> for Error
-where
-  String: From<T>,
-{
-  fn from(value: T) -> Self {
-    Self {
-      message: String::from(value),
-    }
-  }
-}
-
-/// A result type for unit tests.
+/// A [`Result`] object returned from utilities in this test framework.
+///
+/// This uses the generic [`Error`] implementation to ensure that it can return
+/// any and all error objects back from test-cases.
+///
+/// [`Result`]: std::result::Result
 pub type Result<T> = ::std::result::Result<T, Error>;
 
-/// The result that is either implicitly or explicitly returned from tests.
+/// A [`Result`] object returned from all tests, either implicitly or explicitly.
+///
+/// All test results can only successfully return unit `()` objects, and so this
+/// `TestResult` type pins the return type.
 pub type TestResult = crate::Result<()>;

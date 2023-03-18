@@ -26,12 +26,17 @@ pub mod path {
 
 pub mod ty {
   use syn::parse_quote;
+  use syn::ReturnType;
   use syn::Type;
 
   pub fn context() -> Type {
     let path = super::path::crate_internal();
 
     parse_quote!( #path::__Context )
+  }
+
+  pub fn test_result() -> ReturnType {
+    parse_quote!( -> ::neotest_common::TestResult )
   }
 }
 

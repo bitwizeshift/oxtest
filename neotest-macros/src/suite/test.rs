@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::{ToTokens, TokenStreamExt};
-use syn::{parse_quote, Attribute, Block, ItemFn, Signature};
+use syn::{parse_quote, Attribute, Block, ItemFn, ReturnType, Signature};
 
 use crate::common::{ident, ty};
 
@@ -13,10 +13,22 @@ pub struct Test {
 
 impl Test {
   pub fn new(item: ItemFn) -> Self {
+    let block = match &item.sig.output {
+      ReturnType::Default => {
+        let block = item.block;
+        parse_quote!(
+          {
+            #block
+            Ok(())
+          }
+        )
+      }
+      ReturnType::Type(_, _) => item.block,
+    };
     Self {
       attrs: item.attrs,
       sig: Self::test_signature(item.sig),
-      block: item.block,
+      block,
     }
   }
 
@@ -40,6 +52,7 @@ impl Test {
     sig
       .inputs
       .push(parse_quote!(mut #context_ident: #context_ty));
+    sig.output = ty::test_result();
     sig
   }
 }

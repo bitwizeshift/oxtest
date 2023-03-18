@@ -1,8 +1,9 @@
 #![allow(unused)]
 use proc_macro2::TokenStream;
 use quote::ToTokens;
-use syn::{parse_quote, Block, ItemFn, Signature, Stmt};
+use syn::{parse_quote, Block, Expr, ItemFn, ReturnType, Signature, Stmt};
 
+use crate::common::ty;
 use crate::input::{FixtureInput, TestInputs};
 use crate::suite::{Section, SectionGraph, Test, TestAttributes};
 use crate::syn_utils::{ContainsIdent, FunctionDefinition, ModuleDefinition, TryIdent};
@@ -40,9 +41,14 @@ impl ToTokens for ParameterizedTestSuite {
         let scope = &self.sig.ident;
         let test_name = test.executor_name();
 
-        let invoke_stmt: Stmt = parse_quote! { #scope::#test_name(); };
+        let invoke_stmt: Stmt = parse_quote! { #scope::#test_name()?; };
         invoke_stmt.to_tokens(tokens);
       }
+      let ok_expr: Expr = parse_quote! {
+        #[allow(unreachable)]
+        Ok(())
+      };
+      ok_expr.to_tokens(tokens);
     });
 
     ModuleDefinition(&self.sig.ident).surround(tokens, |tokens| {
@@ -132,6 +138,7 @@ impl TestSuite {
 
   fn suite_signature(mut sig: Signature) -> Signature {
     sig.inputs.clear();
+    sig.output = ty::test_result();
     sig
   }
 

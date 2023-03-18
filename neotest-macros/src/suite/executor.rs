@@ -2,6 +2,7 @@ use proc_macro2::TokenStream;
 use quote::ToTokens;
 use syn::{parse_quote, Signature, Stmt, VisPublic, Visibility};
 
+use crate::common::ty;
 use crate::suite::TestAttributes;
 use crate::syn_utils::{FunctionDefinition, ModuleDefinition};
 
@@ -104,6 +105,7 @@ impl TestExecutor {
   fn executor_signature(mut sig: Signature, ident: syn::Ident) -> Signature {
     sig.ident = ident;
     sig.inputs.clear();
+    sig.output = ty::test_result();
     sig
   }
 }

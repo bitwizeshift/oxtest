@@ -2,7 +2,6 @@ use input::SubtestInput;
 use proc_macro::TokenStream;
 use quote::ToTokens;
 use syn::parse_macro_input;
-use syn_utils::Inner;
 
 pub(crate) mod common;
 pub(crate) mod derive_fixture;
@@ -288,43 +287,4 @@ pub fn neotest(attribute: TokenStream, item: TokenStream) -> TokenStream {
     Ok(suite) => suite.to_token_stream().into(),
     Err(error) => TokenStream::from(error.to_compile_error()),
   }
-}
-
-/// An exposition-macro for test sections.
-///
-/// This is used to provide test-names for tests
-///
-/// # Examples
-///
-/// ```ignore
-/// # use neotest_macros::{section, neotest};
-/// #[neotest]
-/// fn test_something() {
-///     let sut: Vec<u8> = Vec::default();
-///
-///     #[section(creates_empty_vector)] {
-///         #[section(has_0_capacity)] {
-///             assert_eq!(sut.capacity(), 0);
-///         }
-///         #[section(has_0_size)] {
-///             assert_eq!(sut.len(), 0);
-///         }
-///     }
-/// }
-/// ```
-///
-/// # Note
-///
-/// This macro only exists to give proper intellisense. Real sections will be
-/// substituted by the [`neotest`] attribute.
-///
-/// [`neotest`]: macro@crate::neotest
-#[proc_macro_attribute]
-pub fn section(attribute: TokenStream, item: TokenStream) -> TokenStream {
-  if !attribute.is_empty() {
-    let _ = syn::parse_macro_input!(attribute as syn::Ident);
-  }
-  let item = syn::parse_macro_input!(item as syn::Block);
-
-  item.to_token_stream().into()
 }

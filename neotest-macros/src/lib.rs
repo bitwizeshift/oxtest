@@ -84,18 +84,18 @@ pub fn neotest_fixture(attribute: TokenStream, item: TokenStream) -> TokenStream
 }
 
 struct Subtest {
-  stmts: Vec<syn::Stmt>,
+  block: syn::Block,
 }
 
 impl quote::ToTokens for Subtest {
   fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
     let context = common::ident::context();
-    let inner = Inner(&self.stmts);
+    let block = &self.block;
     let stmt: syn::Stmt = syn::parse_quote! {
       if #context.can_execute_subtest() {
         #[allow(unused)]
         let mut #context = #context.subtest();
-        #inner
+        #block
       };
     };
     stmt.to_tokens(tokens);
@@ -105,7 +105,7 @@ impl quote::ToTokens for Subtest {
 #[proc_macro]
 pub fn subtest(item: TokenStream) -> TokenStream {
   let input = syn::parse_macro_input!(item as SubtestInput);
-  let subtest = Subtest { stmts: input.stmts };
+  let subtest = Subtest { block: input.block };
   subtest.to_token_stream().into()
 }
 

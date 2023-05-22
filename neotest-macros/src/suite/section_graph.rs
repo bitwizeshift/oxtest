@@ -127,7 +127,7 @@ fn examine_macro(sections: &mut Vec<Section>, mac: &Macro, fail_on_macro: bool) 
 
     let input: SubtestInput = syn::parse(tokens)?;
     define_subsection(sections, input.ident, |sections| -> syn::Result<()> {
-      examine_stmts(sections, &input.stmts, fail_on_macro)
+      examine_stmts(sections, &input.block.stmts, fail_on_macro)
     })?;
   }
   Ok(())

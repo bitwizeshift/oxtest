@@ -163,15 +163,15 @@ mod test {
     const VALUE: u32 = 5;
     let matcher = Le(VALUE);
 
-    subtest! {|matches_less|
+    subtest!(matches_less, {
       assert!(matcher.matches(VALUE - 1));
-    }
-    subtest! {|matches_equal|
+    });
+    subtest!(matches_equal, {
       assert!(matcher.matches(VALUE));
-    }
-    subtest! {|does_not_match_greater|
+    });
+    subtest!(does_not_match_greater, {
       assert!(!matcher.matches(VALUE + 1));
-    }
+    });
   }
 
   #[crate::neotest]
@@ -179,15 +179,15 @@ mod test {
     const VALUE: u32 = 5;
     let matcher = Ge(VALUE);
 
-    subtest! {|matches_greater|
+    subtest!(matches_greater, {
       assert!(matcher.matches(VALUE + 1));
-    }
-    subtest! {|matches_equal|
+    });
+    subtest!(matches_equal, {
       assert!(matcher.matches(VALUE));
-    }
-    subtest! {|does_not_match_less|
+    });
+    subtest!(does_not_match_less, {
       assert!(!matcher.matches(VALUE - 1));
-    }
+    });
   }
 
   #[crate::neotest]
@@ -195,15 +195,15 @@ mod test {
     const VALUE: u32 = 5;
     let matcher = Lt(VALUE);
 
-    subtest! {|matches_less|
+    subtest!(matches_less, {
       assert!(matcher.matches(VALUE - 1));
-    }
-    subtest! {|does_not_match_equal|
+    });
+    subtest!(does_not_match_equal, {
       assert!(!matcher.matches(VALUE));
-    }
-    subtest! {|does_not_match_greater|
+    });
+    subtest!(does_not_match_greater, {
       assert!(!matcher.matches(VALUE + 1));
-    }
+    });
   }
 
   #[crate::neotest]
@@ -211,15 +211,15 @@ mod test {
     const VALUE: u32 = 5;
     let matcher = Gt(VALUE);
 
-    subtest! {|matches_greater|
+    subtest!(matches_greater, {
       assert!(matcher.matches(VALUE + 1));
-    }
-    subtest! {|does_not_match_equal|
+    });
+    subtest!(does_not_match_equal, {
       assert!(!matcher.matches(VALUE));
-    }
-    subtest! {|does_not_match_less|
+    });
+    subtest!(does_not_match_less, {
       assert!(!matcher.matches(VALUE - 1));
-    }
+    });
   }
 
   #[crate::neotest]
@@ -227,15 +227,15 @@ mod test {
     const VALUE: u32 = 5;
     let matcher = Eq(VALUE);
 
-    subtest! {|does_not_match_greater|
+    subtest!(does_not_match_greater, {
       assert!(!matcher.matches(VALUE + 1));
-    }
-    subtest! {|matches_equal|
+    });
+    subtest!(matches_equal, {
       assert!(matcher.matches(VALUE));
-    }
-    subtest! {|does_not_match_less|
+    });
+    subtest!(does_not_match_less, {
       assert!(!matcher.matches(VALUE - 1));
-    }
+    });
   }
 
   #[crate::neotest]
@@ -243,27 +243,27 @@ mod test {
     const VALUE: u32 = 5;
     let matcher = Ne(VALUE);
 
-    subtest! {|matches_greater|
+    subtest!(matches_greater, {
       assert!(matcher.matches(VALUE + 1));
-    }
-    subtest! {|does_not_match_equal|
+    });
+    subtest!(does_not_match_equal, {
       assert!(!matcher.matches(VALUE));
-    }
-    subtest! {|matches_less|
+    });
+    subtest!(matches_less, {
       assert!(matcher.matches(VALUE - 1));
-    }
+    });
   }
 
   #[crate::neotest]
   fn test_any() {
     let matcher = Any;
 
-    subtest! {|matches_int|
+    subtest!(matches_int, {
       assert!(matcher.matches(5));
-    }
-    subtest! {|matches_string|
+    });
+    subtest!(matches_string, {
       assert!(matcher.matches("hello world"));
-    }
+    });
   }
 
   #[crate::neotest]
@@ -271,41 +271,41 @@ mod test {
     const VALUE: u32 = 5;
     let matcher = Not(Ge(VALUE)); // lt
 
-    subtest! {|negates_input|
-      subtest! {|does_not_match_greater|
+    subtest!(negates_input, {
+      subtest!(does_not_match_greater, {
         assert!(!matcher.matches(VALUE + 1));
-      }
-      subtest! {|does_not_match_equal|
+      });
+      subtest!(does_not_match_equal, {
         assert!(!matcher.matches(VALUE));
-      }
-      subtest! {|matches_less|
+      });
+      subtest!(matches_less, {
         assert!(matcher.matches(VALUE - 1));
-      }
-    }
+      });
+    });
   }
 
   #[crate::neotest]
   fn test_is_true() {
     let matcher = IsTrue;
 
-    subtest! {|matches_true|
+    subtest!(matches_true, {
       assert!(matcher.matches(true));
-    }
-    subtest! {|does_not_match_false|
+    });
+    subtest!(does_not_match_false, {
       assert!(!matcher.matches(false));
-    }
+    });
   }
 
   #[crate::neotest]
   fn test_is_false() {
     let matcher = IsFalse;
 
-    subtest! {|matches_false|
+    subtest!(matches_false, {
       assert!(matcher.matches(false));
-    }
-    subtest! {|does_not_match_true|
+    });
+    subtest!(does_not_match_true, {
       assert!(!matcher.matches(true));
-    }
+    });
   }
 
   struct BoolLike(bool);
@@ -320,47 +320,47 @@ mod test {
   fn test_is_truthy() {
     let matcher = IsTruthy;
 
-    subtest! {|matches_truthy_value|
+    subtest!(matches_truthy_value, {
       assert!(matcher.matches(BoolLike(true)));
-    }
-    subtest! {|does_not_match_falsey_value|
+    });
+    subtest!(does_not_match_falsey_value, {
       assert!(!matcher.matches(BoolLike(false)));
-    }
+    });
   }
 
   #[crate::neotest]
   fn test_is_falsey() {
     let matcher = IsFalsey;
 
-    subtest! {|matches_falsey_value|
+    subtest!(matches_falsey_value, {
       assert!(matcher.matches(BoolLike(false)));
-    }
-    subtest! {|does_not_match_truthy_value|
+    });
+    subtest!(does_not_match_truthy_value, {
       assert!(!matcher.matches(BoolLike(true)));
-    }
+    });
   }
 
   #[crate::neotest]
   fn test_is_none() {
     let matcher = IsNone;
 
-    subtest! {|matches_none|
+    subtest!(matches_none, {
       assert!(matcher.matches(None::<()>));
-    }
-    subtest! {|does_not_match_some|
+    });
+    subtest!(does_not_match_some, {
       assert!(!matcher.matches(Some(42)));
-    }
+    });
   }
 
   #[crate::neotest]
   fn test_is_some() {
     let matcher = IsSome;
 
-    subtest! {|matches_some|
+    subtest!(matches_some, {
       assert!(matcher.matches(Some(42)));
-    }
-    subtest! {|does_not_match_none|
+    });
+    subtest!(does_not_match_none, {
       assert!(!matcher.matches(None::<()>));
-    }
+    });
   }
 }

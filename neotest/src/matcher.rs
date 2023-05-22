@@ -83,7 +83,7 @@ pub struct IsFalse;
 impl Matcher<bool> for IsFalse {
   #[inline]
   fn matches(&self, v: bool) -> bool {
-    v == false
+    !v
   }
 }
 
@@ -93,7 +93,7 @@ pub struct IsTrue;
 impl Matcher<bool> for IsTrue {
   #[inline]
   fn matches(&self, v: bool) -> bool {
-    v == true
+    v
   }
 }
 
@@ -107,7 +107,7 @@ where
 {
   #[inline]
   fn matches(&self, v: T) -> bool {
-    bool::from(v) == false
+    !bool::from(v)
   }
 }
 
@@ -121,7 +121,7 @@ where
 {
   #[inline]
   fn matches(&self, v: T) -> bool {
-    bool::from(v) == true
+    bool::from(v)
   }
 }
 

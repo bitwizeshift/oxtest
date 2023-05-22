@@ -23,3 +23,5 @@ pub use neotest_common::{Fixture, Result};
 
 #[doc(hidden, inline)]
 pub use neotest_common::__internal;
+
+pub mod matcher;
